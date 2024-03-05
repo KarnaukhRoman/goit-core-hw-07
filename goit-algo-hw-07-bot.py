@@ -10,8 +10,7 @@ class Field:
 class Name(Field):
    def __init__(self, value):
        super().__init__(value)
-    
-                
+                 
 
 class Phone(Field):
     # реалізація класу
@@ -21,11 +20,22 @@ class Phone(Field):
          self.number = number
          super().__init__(number)
        
+class Birthday(Field):
+    def __init__(self, value):
+        try:
+            # Додайте перевірку коректності даних
+            # та перетворіть рядок на об'єкт datetime
+        except ValueError:
+            raise ValueError("Invalid date format. Use DD.MM.YYYY")
 
 class Record:
     def __init__(self, name):
         self.name = Name(name)
         self.phones = []
+        self.birthday = None
+    
+    def add_birthday(self, birthday):
+        self.birthday = Birthday(birthday)
 
     # реалізація класу
     def add_phone(self, phone):
