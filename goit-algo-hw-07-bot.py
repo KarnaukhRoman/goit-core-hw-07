@@ -1,3 +1,5 @@
+from classes import AddressBook, Record
+
 def input_error(func):
     def inner(*args, **kwargs):
         try:
@@ -17,18 +19,23 @@ def parse_input(user_input):
     return cmd, *args
 
 @input_error
-def add_contact(args, contacts):
+def add_contact(args, book: AddressBook):
     name, phone = args
-    contacts[name]=phone
-    return "Contact added successfully"
+    record = book.find(name)
+    if not record:
+        record = Record(name)
+        book.add_record(record)
+    record.add_phone(phone)
+    return f'Contact {name} added successfully'
 
 @input_error
-def change_contact(args, contacts):
-    if args[0] in contacts.keys():
-        add_contact(args, contacts)
-    else:
-        raise(KeyError)
-    return "Contact successfully changed"
+def change_contact(args, book):
+    name, old_phone, new_phone = args
+    record = book.find(name)
+    if not record:
+        return f'Contact {name} not found'
+    record.edit_phone(old_phone, new_phone)
+    return f'Contact {name} successfully changed"
 
 @input_error
 def show_phone(name, contacts):
@@ -44,6 +51,7 @@ def show_all(contacts):
     return all_contacts
 
 def main():
+    book = AddressBook()
     print("Welcome to the assistant bot!")
     contacts = {}
 
@@ -58,12 +66,12 @@ def main():
             print('How can I help you?')
 
         elif command == 'add':
-            print(add_contact(args, contacts))
+            print(add_contact(args, book))
         elif command == 'change':
-            print(change_contact(args, contacts))
+            print(change_contact(args, book))
         elif command == 'phone':
-            if contacts:
-                print(show_phone(args[0], contacts))
+            if book:
+                print(show_phone(args[0], book))
             else:
                 print('Contacts is empty')
 
