@@ -1,5 +1,6 @@
 from collections import UserDict
 from datetime import datetime
+import datetime
 
 
 class Field:
@@ -23,14 +24,14 @@ class Field:
     def __str__(self):
         return str(self.value)
 
+
 class Birthday(Field):
     def is_valid(self, value):
-        #12.02.2005
         try:
             datetime.strptime(value, "%d.%m.%Y")
+            return True
         except:
             return False
-        return True
 
     @property
     def value(self):
@@ -45,8 +46,8 @@ class Birthday(Field):
 
 
 class Name(Field):
-   def is_valid(self, value):
-       return bool(value)
+    def is_valid(self, value):
+        return bool(value)
                  
 
 class Phone(Field):
@@ -68,26 +69,25 @@ class Record:
         self.phones.append(Phone(phone))
     
     def edit_phone(self, old_phone, new_phone):
-         if self.find_phone(old_phone):
-              self.remove_phone(old_phone)
-              self.add_phone(new_phone)
-         else:
-             raise ValueError
-         
-    
+        if self.find_phone(old_phone):
+            self.remove_phone(old_phone)
+            self.add_phone(new_phone)
+        else:
+            raise ValueError
+
     def find_phone(self, phone):
-          for ph in self.phones:
-               if ph.value == phone:
-                    return ph
-          return None
+        for ph in self.phones:
+            if ph.value == phone:
+                return ph
+            return None
     
     def remove_phone(self, phone):
-         ph = self.find_phone(phone)
-         self.phones.remove(ph)
-    
-    
+        ph = self.find_phone(phone)
+        self.phones.remove(ph)
+
     def __str__(self):
-       return f"Contact name: {str(self.name)}, phones: {'; '.join(str(p.value) for p in self.phones)}, birthday: {str(self.birthday)}"
+        return f"Contact name: {str(self.name)}, phones: {'; '.join(str(p.value) for p in self.phones)}, birthday: {str(self.birthday)}"
+
 
 class AddressBook(UserDict):
     # реалізація класу
@@ -129,9 +129,7 @@ class AddressBook(UserDict):
        return f"Contacts: {'; '.join(str(record) for record in self.data.values())}"
 
 
-
-
-if __name__=="__main__":
+if __name__ == "__main__":
     # Створення нової адресної книги
     book = AddressBook()
 
