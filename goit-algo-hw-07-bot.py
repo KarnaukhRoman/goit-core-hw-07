@@ -47,7 +47,7 @@ def add_contact(args, book: AddressBook):
     return message
 
 
-#@input_error
+@input_error
 def birthdays(args, book: AddressBook):
     return book.get_upcoming_birthdays()
 
@@ -61,6 +61,11 @@ def change_contact(args, book: AddressBook):
     record.edit_phone(old_phone, new_phone)
     return f'Contact {name} successfully changed'
 
+def exit(args, book: AddressBook):
+    return 'Good bye!'
+
+def hello(args, book: AddressBook):
+    return 'How can I help you?'
 
 def show_all(args, book: AddressBook):
     return book
@@ -85,6 +90,16 @@ def show_phone(args, contacts):
 
 
 def main():
+    commands = {
+        'add': add_contact,
+        'add-birthday': add_birthday,
+        'all': show_all,
+        'birthday': birthdays,
+        'change': change_contact,
+        'hello': hello,
+        'phone': show_phone,
+        'show-birthday': show_birthday, 
+    }
     book = AddressBook()
     print("Welcome to the assistant bot!")
 
@@ -94,27 +109,11 @@ def main():
         if command in ['close', 'exit']:
             print('Good by!')
             break
-
-        elif command == 'hello':
-            print('How can I help you?')
-
-        elif command == 'add':
-            print(add_contact(args, book))
-        elif command == 'change':
-            print(change_contact(args, book))
-        elif command == 'phone':
-            print(show_phone(args, book))
-        elif command == 'all':
-            print(show_all(args, book))
-        elif command == 'birthday':
-            print(show_birthday(args, book))
-        elif command == 'add-birthday':
-            print(add_birthday(args, book))
-        elif command == 'show-birthday':
-            print(birthdays(args, book))
-
         else:
-            print('Invalid command.')
+            try:
+                print(commands[command](args, book))
+            except KeyError:
+                print('Invalid command.')
 
 
 if __name__ == "__main__":
