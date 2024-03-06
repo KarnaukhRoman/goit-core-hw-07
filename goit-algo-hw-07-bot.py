@@ -21,7 +21,6 @@ def parse_input(user_input):
     cmd = cmd.strip().lower()
     return cmd, *args
 
-
 @input_error
 def add_birthday(args, book: AddressBook):
     name, birthday = args
