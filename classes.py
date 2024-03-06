@@ -1,32 +1,58 @@
 from collections import UserDict
+from datetime import datetime
+
 
 class Field:
     def __init__(self, value):
         self.value = value
 
+    def is_valid(self, value):
+        return True
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, value):
+        if self.is_valid(value):
+            self.__value = value
+        else:
+            raise ValueError
+
     def __str__(self):
-        return str(self.value)  
+        return str(self.value)
+
+class Birthday(Field):
+    def is_valid(self, value):
+        #12.02.2005
+        try:
+            datetime.strptime(value, "%d.%m.%Y")
+        except:
+            return False
+        return True
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, value):
+        if self.is_valid(value):
+            self.__value = datetime.strptime(value, "%d.%m.%Y")
+        else:
+            raise ValueError
+
 
 class Name(Field):
-   def __init__(self, value):
-       super().__init__(value)
+   def is_valid(self, value):
+       return bool(value)
                  
 
 class Phone(Field):
-    # реалізація класу
-     def __init__(self, number):
-         if len(number) != 10 or not number.isdigit():
-            raise ValueError
-         self.number = number
-         super().__init__(number)
+    def is_valid(self, value):
+        return len(value) == 10 and value.isdigit()
        
-class Birthday(Field):
-    def __init__(self, value):
-        try:
-            # Додайте перевірку коректності даних
-            # та перетворіть рядок на об'єкт datetime
-        except ValueError:
-            raise ValueError("Invalid date format. Use DD.MM.YYYY")
 
 class Record:
     def __init__(self, name):
@@ -61,7 +87,7 @@ class Record:
     
     
     def __str__(self):
-       return f"Contact name: {str(self.name)}, phones: {'; '.join(str(p.value) for p in self.phones)}"
+       return f"Contact name: {str(self.name)}, phones: {'; '.join(str(p.value) for p in self.phones)}, birthday: {str(self.birthday)}"
 
 class AddressBook(UserDict):
     # реалізація класу
@@ -74,6 +100,34 @@ class AddressBook(UserDict):
 
     def find(self, name):
         return self.data.get(name)
+
+    def get_upcoming_birthdays(self):
+        curent_date = datetime.today().date()
+        birthdays = []
+        for user in self.data:
+            birthday_date = str(curent_date.year) + str(user["birthday"])[4:]
+            birthday_date = datetime.strptime(birthday_date,"%Y.%m.%d").date()
+            week_day_bdate = birthday_date.isoweekday()
+            days_between = (birthday_date - curent_date).days
+            if 0 <= days_between < 7:
+                match week_day_bdate:
+                    case 6:
+                        birthdays.append({'name': user['name'],
+                                          'congratulation_date': (birthday_date + datetime.timedelta(days=2)).strftime(
+                                              "%Y.%m.%d")})
+                    case 7:
+                        birthdays.append({'name': user['name'],
+                                          'congratulation_date': (birthday_date + datetime.timedelta(days=1)).strftime(
+                                              "%Y.%m.%d")})
+                    case _:
+                        birthdays.append(
+                            {'name': user['name'], 'congratulation_date': birthday_date.strftime("%Y.%m.%d")})
+
+        return birthdays
+
+    def __str__(self):
+       return f"Contacts: {'; '.join(str(record) for record in self.data.values())}"
+
 
 
 
