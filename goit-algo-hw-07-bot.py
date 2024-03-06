@@ -47,7 +47,7 @@ def add_contact(args, book: AddressBook):
     return message
 
 
-@input_error
+#@input_error
 def birthdays(args, book: AddressBook):
     return book.get_upcoming_birthdays()
 

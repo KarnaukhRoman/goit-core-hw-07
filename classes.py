@@ -1,7 +1,6 @@
 from collections import UserDict
-from datetime import datetime
 import datetime
-
+from datetime import datetime, timedelta
 
 class Field:
     def __init__(self, value):
@@ -27,10 +26,15 @@ class Field:
 
 class Birthday(Field):
     def is_valid(self, value):
-        try:
-            datetime.strptime(value, "%d.%m.%Y")
+        # try:
+        #     dt = datetime.strptime(value, "%d.%m.%Y").date()
+        #     return True
+        # except:
+        #     return False
+        dt = datetime.strptime(value, "%d.%m.%Y").date()
+        if dt:
             return True
-        except:
+        else:
             return False
 
     @property
@@ -40,7 +44,7 @@ class Birthday(Field):
     @value.setter
     def value(self, value):
         if self.is_valid(value):
-            self.__value = datetime.strptime(value, "%d.%m.%Y")
+            self.__value = datetime.strptime(value, "%d.%m.%Y").date()
         else:
             raise ValueError
 
@@ -86,7 +90,7 @@ class Record:
         self.phones.remove(ph)
 
     def __str__(self):
-        return f"Contact name: {str(self.name)}, phones: {'; '.join(str(p.value) for p in self.phones)}, birthday: {str(self.birthday)}"
+        return f"Contact name: {str(self.name)}, phones: {'; '.join(str(p.value) for p in self.phones)}, birthday: {str(self.birthday)} \n"
 
 
 class AddressBook(UserDict):
@@ -104,29 +108,29 @@ class AddressBook(UserDict):
     def get_upcoming_birthdays(self):
         curent_date = datetime.today().date()
         birthdays = []
-        for user in self.data:
-            birthday_date = str(curent_date.year) + str(user["birthday"])[4:]
-            birthday_date = datetime.strptime(birthday_date,"%Y.%m.%d").date()
+        for record in self.data.values():
+            birthday_date = str(curent_date.year) + str(record.birthday)[4::]
+            birthday_date = datetime.strptime(birthday_date,"%Y-%m-%d").date()
             week_day_bdate = birthday_date.isoweekday()
             days_between = (birthday_date - curent_date).days
             if 0 <= days_between < 7:
                 match week_day_bdate:
                     case 6:
-                        birthdays.append({'name': user['name'],
-                                          'congratulation_date': (birthday_date + datetime.timedelta(days=2)).strftime(
-                                              "%Y.%m.%d")})
+                        birthdays.append({'name': record.name.value,
+                                          'congratulation_date': (birthday_date + timedelta(days=2)).strftime(
+                                              "%d.%m.%Y")})
                     case 7:
-                        birthdays.append({'name': user['name'],
-                                          'congratulation_date': (birthday_date + datetime.timedelta(days=1)).strftime(
-                                              "%Y.%m.%d")})
+                        birthdays.append({'name': record.name.value,
+                                          'congratulation_date': (birthday_date + timedelta(days=1)).strftime(
+                                              "%d.%m.%Y")})
                     case _:
                         birthdays.append(
-                            {'name': user['name'], 'congratulation_date': birthday_date.strftime("%Y.%m.%d")})
+                            {'name': record.name.value, 'congratulation_date': birthday_date.strftime("%d.%m.%Y")})
 
         return birthdays
 
     def __str__(self):
-       return f"Contacts: {'; '.join(str(record) for record in self.data.values())}"
+       return f"Contacts$: \n{'; '.join(str(record) for record in self.data.values())}"
 
 
 if __name__ == "__main__":
