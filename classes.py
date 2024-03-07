@@ -78,7 +78,7 @@ class Record:
         for ph in self.phones:
             if ph.value == phone:
                 return ph
-            return None
+        return None
     
     def remove_phone(self, phone):
         ph = self.find_phone(phone)
