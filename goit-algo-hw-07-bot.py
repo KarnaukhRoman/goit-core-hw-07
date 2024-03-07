@@ -93,7 +93,7 @@ def main():
         'add': add_contact,
         'add-birthday': add_birthday,
         'all': show_all,
-        'birthday': birthdays,
+        'birthdays': birthdays,
         'change': change_contact,
         'hello': hello,
         'phone': show_phone,
